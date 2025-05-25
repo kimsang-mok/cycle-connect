@@ -32,8 +32,8 @@ export class VerifyUserService
   ): Promise<Result<LoginUserResponseDto, NotFoundException | Error>> {
     try {
       return this.userVerificationRepo.transaction(async () => {
-        const verification = await this.userVerificationRepo.findOneByCode(
-          command.code,
+        const verification = await this.userVerificationRepo.findOneByTarget(
+          command.target,
         );
 
         if (!verification) {
@@ -42,7 +42,7 @@ export class VerifyUserService
 
         verification.verify(command.code);
 
-        this.userVerificationRepo.markAsVerified(verification.id);
+        this.userVerificationRepo.save(verification);
 
         const maybeUser = await this.userRepo.findOneById(
           verification.getProps().userId,

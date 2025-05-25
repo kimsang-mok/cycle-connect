@@ -5,7 +5,7 @@ export interface UserVerificationRepositoryPort
   extends RepositoryPort<UserVerificationEntity> {
   findOneByCode(code: string): Promise<UserVerificationEntity | null>;
 
-  findOneByUserId(userId: string): Promise<UserVerificationEntity | null>;
+  findOneByTarget(target: string): Promise<UserVerificationEntity | null>;
 
-  markAsVerified(id: string): Promise<void>;
+  findOneByUserId(userId: string): Promise<UserVerificationEntity | null>;
 }

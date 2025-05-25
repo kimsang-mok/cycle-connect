@@ -15,7 +15,12 @@ export class CreateUserVerificationWhenUserIsCreatedDomainEventHandler {
     suppressErrors: false,
   })
   async handle(event: UserCreatedDomainEvent): Promise<any> {
-    const verification = UserVerificationEntity.create(event.aggregateId);
+    const target = event.email?.unpack() ?? event.phone?.unpack();
+
+    const verification = UserVerificationEntity.create(
+      event.aggregateId,
+      target!,
+    );
     await this.userVerificationRepo.insert(verification);
   }
 }

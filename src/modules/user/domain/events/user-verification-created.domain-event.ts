@@ -3,6 +3,8 @@ import { DomainEvent, DomainEventProps } from '@src/libs/ddd';
 export class UserVerificationCreatedDomainEvent extends DomainEvent {
   readonly expiresAt: Date;
 
+  readonly target: string;
+
   readonly code: string;
 
   readonly userId: string;
@@ -12,6 +14,7 @@ export class UserVerificationCreatedDomainEvent extends DomainEvent {
   constructor(props: DomainEventProps<UserVerificationCreatedDomainEvent>) {
     super(props);
     this.expiresAt = props.expiresAt;
+    this.target = props.target;
     this.code = props.code;
     this.userId = props.userId;
     this.verified = props.verified;

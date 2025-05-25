@@ -7,15 +7,15 @@ import { UserVerificationCreatedDomainEvent } from './events/user-verification-c
 export class UserVerificationEntity extends AggregateRoot<UserVerificationProps> {
   protected readonly _id: AggregateId;
 
-  static create(userId: AggregateId): UserVerificationEntity {
+  static create(userId: AggregateId, target: string): UserVerificationEntity {
     const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // expires in 5 mins
-    console.log('User Id:', userId);
 
     const id = randomUUID();
     const props: UserVerificationProps = {
       expiresAt,
       code,
+      target,
       userId,
       verified: false,
     };
@@ -29,6 +29,7 @@ export class UserVerificationEntity extends AggregateRoot<UserVerificationProps>
       new UserVerificationCreatedDomainEvent({
         aggregateId: id,
         expiresAt: props.expiresAt,
+        target: props.target,
         code: props.code,
         userId: props.userId,
         verified: props.verified,

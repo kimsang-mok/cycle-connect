@@ -25,6 +25,7 @@ export enum UserRoles {
 
 export interface UserVerificationProps {
   userId: AggregateId;
+  target: string;
   code: string;
   expiresAt: Date;
   verified: boolean;

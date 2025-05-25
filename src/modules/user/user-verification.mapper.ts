@@ -21,6 +21,7 @@ export class UserVerificationMapper
     const record: UserVerificationModel = {
       id: copy.id,
       code: copy.code,
+      target: copy.target,
       createdAt: copy.createdAt,
       expiresAt: copy.expiresAt,
       userId: copy.userId,
@@ -37,6 +38,7 @@ export class UserVerificationMapper
       props: {
         expiresAt: new Date(record.expiresAt),
         code: record.code,
+        target: record.target,
         verified: record.verified,
         userId: record.userId,
       },
@@ -45,11 +47,7 @@ export class UserVerificationMapper
   }
 
   toResponse(entity: UserVerificationEntity): UserVerificationResponseDto {
-    const props = entity.getProps();
     const response = new UserVerificationResponseDto(entity);
-    response.code = props.code;
-    response.verified = props.verified;
-    response.expiresAt = props.expiresAt;
     return response;
   }
 }

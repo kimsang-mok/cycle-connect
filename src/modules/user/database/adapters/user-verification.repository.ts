@@ -11,6 +11,7 @@ import { UserVerificationMapper } from '../../user-verification.mapper';
 export const userVerificationSchema = z.object({
   id: z.string().uuid().refine(Boolean),
   expiresAt: z.coerce.date(),
+  target: z.string(),
   userId: z.string().uuid().refine(Boolean),
   code: z.string().min(6),
   verified: z.boolean(),
@@ -40,6 +41,18 @@ export class UserVerificationRepository
     );
   }
 
+  async findOneByTarget(
+    target: string,
+  ): Promise<UserVerificationEntity | null> {
+    const verification = await this.pool.one(
+      sql.type(userVerificationSchema)`
+      SELECT * FROM "user_verifications" WHERE "target" = ${target}
+    `,
+    );
+
+    return this.mapper.toDomain(verification);
+  }
+
   async findOneByCode(code: string): Promise<UserVerificationEntity | null> {
     const verification = await this.pool.one(
       sql.type(
@@ -62,11 +75,11 @@ export class UserVerificationRepository
     return this.mapper.toDomain(verification);
   }
 
-  async markAsVerified(id: string): Promise<void> {
-    await this.pool.query(sql`
-      UPDATE ${sql.identifier([this.tableName])}
-      SET verified = true
-      WHERE id = ${id}
-    `);
-  }
+  // async markAsVerified(id: string): Promise<void> {
+  //   await this.pool.query(sql`
+  //     UPDATE ${sql.identifier([this.tableName])}
+  //     SET verified = true
+  //     WHERE id = ${id}
+  //   `);
+  // }
 }

@@ -4,9 +4,15 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class VerifyUserRequestDto {
   @ApiProperty({
     example: '123456',
-    type: String,
   })
   @IsString()
   @IsNotEmpty()
   code: string;
+
+  @ApiProperty({
+    example: 'test1@example.com',
+  })
+  @IsString()
+  @IsNotEmpty()
+  target: string;
 }

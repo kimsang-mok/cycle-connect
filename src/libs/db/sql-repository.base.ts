@@ -121,6 +121,35 @@ export abstract class SqlRepositoryBase<
     }
   }
 
+  async save(entity: Aggregate): Promise<void> {
+    const record = this.mapper.toPersistence(entity);
+
+    const updates = Object.entries(record)
+      .filter(([key, value]) => key !== 'id' && value !== undefined)
+      .map(([key, value]) => {
+        if (
+          typeof value === 'string' ||
+          typeof value === 'number' ||
+          typeof value === 'boolean'
+        ) {
+          return sql`${sql.identifier([key])} = ${value}`;
+        }
+
+        if (value instanceof Date) {
+          return sql`${sql.identifier([key])} = ${sql.timestamp(value)}`;
+        }
+
+        throw new Error(`Unsupported value type for column "${key}"`);
+      });
+
+    const query = sql`
+      UPDATE ${sql.identifier([this.tableName])}
+      SET ${sql.join(updates, sql`, `)}
+      WHERE id = ${record.id as PrimitiveValueExpression}`;
+
+    await this.writeQuery(query, entity);
+  }
+
   /**
    * Utility method for write queries when you need to mutate an entity.
    * Executes entity validation, publishes events,
