@@ -13,6 +13,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { VerifyUserRequestDto } from './verify-user.request.dto';
 import { VerifyUserCommand } from './verify-user.command';
 import { LoginUserResponseDto } from '../login-user/login-user.response.dto';
+import { match, Result } from 'oxide.ts';
 
 @Controller(routesV1.version)
 export class VerifyUserController {
@@ -40,15 +41,17 @@ export class VerifyUserController {
       cookies,
     });
 
-    const result = await this.commandBus.execute(command);
+    const result: Result<LoginUserResponseDto, any> =
+      await this.commandBus.execute(command);
 
-    const { user, token, refreshToken } = result.unwrap();
-
-    this.cookiesService.signCookie(response, refreshToken);
-
-    return {
-      user,
-      accessToken: token,
-    };
+    return match(result, {
+      Ok: (result: LoginUserResponseDto) => {
+        this.cookiesService.signCookie(response, result.refreshToken);
+        return result;
+      },
+      Err: (error) => {
+        throw error;
+      },
+    });
   }
 }

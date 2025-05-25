@@ -5,7 +5,6 @@ import { Strategy } from 'passport-jwt';
 import { JwtRefreshPayloadType } from './types/jwt-refresh-payload';
 
 import { Request } from 'express';
-import { Ok, Result } from 'oxide.ts';
 import { authConfig } from '@src/configs/auth.config';
 
 @Injectable()
@@ -26,13 +25,10 @@ export class JwtRefreshStrategy extends PassportStrategy(
       secretOrKey: authConfig.refreshSecret,
     });
   }
-  public validate(
-    payload: JwtRefreshPayloadType,
-  ): Result<JwtRefreshPayloadType, UnauthorizedException> {
+  public validate(payload: JwtRefreshPayloadType): JwtRefreshPayloadType {
     if (!payload.id) {
       throw new UnauthorizedException();
     }
-
-    return Ok(payload);
+    return payload;
   }
 }

@@ -15,6 +15,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserNotFoundError } from '@src/modules/user/user.errors';
 import { ApiErrorResponse } from '@src/libs/api/api-error.response';
 import { LoginUserRequestDto } from './login-user.request.dto';
+import { match, Result } from 'oxide.ts';
 
 @Controller(routesV1.version)
 export class LoginUserController {
@@ -45,15 +46,17 @@ export class LoginUserController {
 
     const command = new LoginUserCommand({ ...loginDto, cookies });
 
-    const result = await this.commandBus.execute(command);
+    const result: Result<LoginUserResponseDto, any> =
+      await this.commandBus.execute(command);
 
-    const { user, token, refreshToken } = result.unwrap();
-
-    this.cookiesService.signCookie(response, refreshToken);
-
-    return {
-      user,
-      accessToken: token,
-    };
+    return match(result, {
+      Ok: (result: LoginUserResponseDto) => {
+        this.cookiesService.signCookie(response, result.refreshToken);
+        return result;
+      },
+      Err: (error) => {
+        throw error;
+      },
+    });
   }
 }
