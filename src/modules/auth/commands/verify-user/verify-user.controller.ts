@@ -4,25 +4,26 @@ import {
   Body,
   Controller,
   HttpStatus,
-  Post,
+  Patch,
   Request,
   Response,
 } from '@nestjs/common';
 import { routesV1 } from '@src/configs/app.routes';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VerifyUserRequestDto } from './verify-user.request.dto';
 import { VerifyUserCommand } from './verify-user.command';
 import { LoginUserResponseDto } from '../login-user/login-user.response.dto';
 import { match, Result } from 'oxide.ts';
 
 @Controller(routesV1.version)
+@ApiTags(routesV1.auth.tag)
 export class VerifyUserController {
   constructor(
     private commandBus: CommandBus,
     private cookiesService: CookiesService,
   ) {}
 
-  @Post(routesV1.auth.verify)
+  @Patch(routesV1.auth.verify)
   @ApiOperation({
     summary: 'Verify account',
   })

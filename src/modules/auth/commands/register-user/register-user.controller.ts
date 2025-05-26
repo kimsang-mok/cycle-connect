@@ -6,7 +6,7 @@ import {
   Controller,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { routesV1 } from '@src/configs/app.routes';
 import { ApiErrorResponse } from '@src/libs/api/api-error.response';
 import { IdResponse } from '@src/libs/api/id.response.dto';
@@ -17,6 +17,7 @@ import { UserAlreadyExistsError } from '@src/modules/user/user.errors';
 import { match, Result } from 'oxide.ts';
 
 @Controller(routesV1.version)
+@ApiTags(routesV1.auth.tag)
 export class RegisterUserController {
   constructor(private readonly commandBus: CommandBus) {}
 

@@ -1,21 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { BikeTypes } from '../../domain/bike.types';
 
 export class CreateBikeRequestDto {
-  @ApiProperty({
-    format: 'uuid',
-    example: 'dcd93720-29a6-4937-b7a9-001a0f6c6d3f',
-  })
-  @IsUUID()
-  ownerId: string;
-
   @ApiProperty({ enum: BikeTypes, example: BikeTypes.motorbike })
   @IsEnum(BikeTypes)
   type: BikeTypes;

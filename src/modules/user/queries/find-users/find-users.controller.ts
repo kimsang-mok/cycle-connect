@@ -7,7 +7,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
-import { ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { routesV1 } from '@src/configs/app.routes';
 import { UserPaginatedResponseDto } from '../../dtos/user.paginated.response.dto';
 import { FindUsersRequestDto } from './find-users.request.dto';
@@ -23,12 +28,17 @@ import { UserRoles } from '../../domain/user.types';
 import { Roles } from '@src/modules/auth/roles.decorator';
 
 @Controller(routesV1.version)
+@ApiTags(routesV1.user.tag)
 export class FindUsersController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @Get(routesV1.user.root)
   @Roles(UserRoles.admin, UserRoles.renter)
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'Find users',
+  })
+  @ApiBearerAuth()
   @ApiResponse({
     status: HttpStatus.OK,
     type: UserPaginatedResponseDto,

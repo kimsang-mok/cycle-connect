@@ -6,8 +6,8 @@ import {
   UpdateDetailsProps,
 } from './bike.types';
 import { randomUUID } from 'crypto';
-import { ArgumentInvalidException } from '@src/libs/exceptions';
-import { RentalPeriod } from '../value-objects/rental-period.value-object';
+import { RentalPeriod } from './value-objects/rental-period.value-object';
+import { Price } from './value-objects/price.value-object';
 
 export class BikeEntity extends AggregateRoot<BikeProps> {
   protected readonly _id: AggregateId;
@@ -30,7 +30,7 @@ export class BikeEntity extends AggregateRoot<BikeProps> {
     model,
   }: UpdateDetailsProps): void {
     this.props.description = description;
-    this.props.pricePerDay = pricePerDay;
+    this.props.pricePerDay = new Price(pricePerDay);
     if (enginePower !== undefined) {
       this.props.enginePower = enginePower;
     }
@@ -59,11 +59,5 @@ export class BikeEntity extends AggregateRoot<BikeProps> {
     return !extistingBookings.some((b) => b.overlaps(period));
   }
 
-  validate(): void {
-    if (this.props.pricePerDay <= 0) {
-      throw new ArgumentInvalidException(
-        'Bike price per day must be a positive amount',
-      );
-    }
-  }
+  validate(): void {}
 }

@@ -1,9 +1,11 @@
+import { Price } from './value-objects/price.value-object';
+
 export interface BikeProps {
   ownerId: string;
   type: BikeTypes;
   model: string;
   enginePower: number /* e.g. CC for motorbike or gear count for bicycle */;
-  pricePerDay: number;
+  pricePerDay: Price;
   description: string;
   isActive: boolean;
 }
@@ -13,7 +15,7 @@ export interface CreateBikeProps {
   type: BikeTypes;
   model: string;
   enginePower: number;
-  pricePerDay: number;
+  pricePerDay: Price;
   description: string;
 }
 

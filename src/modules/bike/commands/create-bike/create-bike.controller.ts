@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBikeRequestDto } from './create-bike.request.dto';
 import { CreateBikeCommand } from './create-bike.command';
@@ -12,13 +12,16 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
 import { Roles } from '@src/modules/auth/roles.decorator';
 import { UserRoles } from '@src/modules/user/domain/user.types';
 import { JwtAuthGuard } from '@src/modules/auth/libs/guard/jwt-auth-guard';
 import { RolesGuard } from '@src/modules/auth/libs/guard/roles.guard';
+import { Price } from '../../domain/value-objects/price.value-object';
 
 @Controller(routesV1.version)
+@ApiTags(routesV1.bike.tag)
 export class CreateBikeController {
   constructor(private commandBus: CommandBus) {}
 
@@ -32,8 +35,12 @@ export class CreateBikeController {
     description: 'Bike created successfully',
     type: IdResponse,
   })
-  async create(@Body() body: CreateBikeRequestDto) {
-    const command = new CreateBikeCommand({ ...body });
+  async create(@Body() body: CreateBikeRequestDto, @Request() request) {
+    const command = new CreateBikeCommand({
+      ...body,
+      ownerId: request.user.id,
+      pricePerDay: new Price(body.pricePerDay),
+    });
 
     const result: Result<AggregateId, any> =
       await this.commandBus.execute(command);

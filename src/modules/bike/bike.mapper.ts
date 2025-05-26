@@ -3,6 +3,7 @@ import { BikeModel, bikeSchema } from './database/bike.schema';
 import { BikeEntity } from './domain/bike.entity';
 import { BikeResponseDto } from './dtos/bike.response.dto';
 import { Injectable } from '@nestjs/common';
+import { Price } from './domain/value-objects/price.value-object';
 
 @Injectable()
 export class BikeMapper
@@ -18,7 +19,7 @@ export class BikeMapper
       type: copy.type,
       model: copy.model,
       enginePower: copy.enginePower,
-      pricePerDay: copy.pricePerDay,
+      pricePerDay: copy.pricePerDay.unpack(),
       description: copy.description,
       isActive: copy.isActive,
     };
@@ -35,7 +36,7 @@ export class BikeMapper
         type: record.type,
         model: record.model,
         enginePower: record.enginePower,
-        pricePerDay: record.pricePerDay,
+        pricePerDay: new Price(record.pricePerDay),
         description: record.description,
         isActive: record.isActive,
       },
@@ -50,7 +51,7 @@ export class BikeMapper
     response.type = props.type;
     response.model = props.model;
     response.enginePower = props.enginePower;
-    response.pricePerDay = props.pricePerDay;
+    response.pricePerDay = props.pricePerDay.unpack();
     response.description = props.description;
     response.isActive = props.isActive;
     return response;
