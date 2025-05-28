@@ -22,8 +22,18 @@ export class RentalPeriod extends ValueObject<RentalPeriodProps> {
   }
 
   overlaps(other: RentalPeriod): boolean {
-    // Overlap occurs if start is before other's end and end is after other's start
-    return this.start < other.end && this.end > other.start;
+    const thisStart = this.toUTCDateOnly(this.start);
+    const thisEnd = this.toUTCDateOnly(this.end);
+    const otherStart = this.toUTCDateOnly(other.start);
+    const otherEnd = this.toUTCDateOnly(other.end);
+
+    return thisStart <= otherEnd && thisEnd >= otherStart;
+  }
+
+  private toUTCDateOnly(date: Date): Date {
+    return new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+    );
   }
 
   protected validate(props: RentalPeriodProps): void {

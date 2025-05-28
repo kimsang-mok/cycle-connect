@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BikeModule } from './modules/bike/bike.module';
+import { BookingModule } from './modules/booking/booking.module';
 
 const interceptors: Provider[] = [
   {
@@ -35,6 +36,7 @@ const interceptors: Provider[] = [
     UserModule,
     NotificationModule,
     BikeModule,
+    BookingModule,
   ],
   controllers: [],
   providers: [...interceptors],

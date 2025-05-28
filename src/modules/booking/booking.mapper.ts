@@ -35,8 +35,8 @@ export class BookingMapper
         bikeId: record.bikeId,
         customerId: record.customerId,
         period: new RentalPeriod({
-          start: record.startDate,
-          end: record.endDate,
+          start: new Date(record.startDate),
+          end: new Date(record.endDate),
         }),
         totalPrice: new Price(record.totalPrice),
         status: record.status,

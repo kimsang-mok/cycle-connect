@@ -17,13 +17,8 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
   static create(create: CreateBookingProps) {
     const id = randomUUID();
 
-    const totalPrice = create.pricePerDay.multiply(
-      create.period.getDurationInDays(),
-    );
-
     const props: BookingProps = {
       ...create,
-      totalPrice,
       status: BookingStatus.pendingPayment,
     };
 

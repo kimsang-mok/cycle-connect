@@ -7,8 +7,8 @@ export const bookingSchema = z.object({
   updatedAt: z.coerce.date(),
   bikeId: z.string().uuid(),
   customerId: z.string().uuid(),
-  startDate: z.date(),
-  endDate: z.date(),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
   status: z.nativeEnum(BookingStatus),
   totalPrice: z.number(),
 });

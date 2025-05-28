@@ -20,5 +20,5 @@ export interface CreateBookingProps {
   bikeId: string;
   customerId: string;
   period: RentalPeriod;
-  pricePerDay: Price;
+  totalPrice: Price;
 }

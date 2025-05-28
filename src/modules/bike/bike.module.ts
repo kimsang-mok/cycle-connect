@@ -9,6 +9,7 @@ import { ActivateBikeService } from './commands/activate-bike/activate-bike.serv
 import { DeactivateBikeService } from './commands/deactivate-bike/deactivate-bike.service';
 import { ActivateBikeController } from './commands/activate-bike/activate-bike.controller';
 import { DeactivateBikeController } from './commands/deactivate-bike/deactivate-bike.controller';
+import { MakeBikeUnavailableWhenBookingIsCreated } from './event-handlers/make-bike-unavailable-when-booking-is-created.domain-event.handler';
 
 const controllers = [
   CreateBikeController,
@@ -29,11 +30,20 @@ const repositories: Provider[] = [
   },
 ];
 
+const eventHandlers: Provider[] = [MakeBikeUnavailableWhenBookingIsCreated];
+
 const mappers: Provider[] = [BikeMapper];
 
 @Module({
   imports: [CqrsModule],
   controllers: [...controllers],
-  providers: [Logger, ...repositories, ...commandHandlers, ...mappers],
+  providers: [
+    Logger,
+    ...repositories,
+    ...commandHandlers,
+    ...eventHandlers,
+    ...mappers,
+  ],
+  exports: [BIKE_REPOSITORY],
 })
 export class BikeModule {}

@@ -29,11 +29,13 @@ export class BookingRepository
   async findConfirmedOrPendingByBikeId(
     bikeId: string,
   ): Promise<BookingEntity[]> {
+    const statuses = [BookingStatus.pendingPayment, BookingStatus.confirmed];
+
     const query = sql.type(this.schema)`
-      SELECT * FROM ${sql.identifier([this.tableName])}
-      WHERE "bikeId" = ${bikeId}
-        AND status IN ('${BookingStatus.pendingPayment}', '${BookingStatus.confirmed}')
-    `;
+    SELECT * FROM ${sql.identifier([this.tableName])}
+    WHERE "bikeId" = ${bikeId}
+      AND status = ANY(${sql.array(statuses, 'text')})
+  `;
 
     const result = await this.pool.query(query);
     return result.rows.map(this.mapper.toDomain);
