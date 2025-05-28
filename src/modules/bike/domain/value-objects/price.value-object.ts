@@ -16,4 +16,17 @@ export class Price extends ValueObject<number> {
   multiply(days: number): Price {
     return new Price(this.props.value * days);
   }
+
+  add(other: Price): Price {
+    return new Price(this.props.value + other.props.value);
+  }
+
+  subtract(other: Price): Price {
+    return new Price(this.props.value - other.props.value);
+  }
+
+  applyDiscount(percent: number): Price {
+    const discount = this.props.value * (percent / 100);
+    return new Price(this.props.value - discount);
+  }
 }
