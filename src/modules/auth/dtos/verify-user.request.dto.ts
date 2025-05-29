@@ -3,11 +3,11 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 export class VerifyUserRequestDto {
   @ApiProperty({
-    example: '123456',
+    description: 'Hashed token',
   })
   @IsString()
   @IsNotEmpty()
-  code: string;
+  token: string;
 
   @ApiProperty({
     example: 'test1@example.com',

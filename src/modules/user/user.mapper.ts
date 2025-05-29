@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Mapper } from '@src/libs/ddd';
 import { UserEntity } from './domain/user.entity';
-import { UserModel, userSchema } from './database/adapters/user.repository';
+import { UserModel, userSchema } from './database/user.schema';
 import { UserResponseDto } from './dtos/user.response.dto';
-import { Email } from './value-objects/email.value-object';
-import { PhoneNumber } from './value-objects/phone-number.value-object';
-import { Password } from './value-objects/password.value-object';
+import { Email } from './domain/value-objects/email.value-object';
+import { Password } from './domain/value-objects/password.value-object';
 
 @Injectable()
 export class UserMapper
@@ -17,8 +16,7 @@ export class UserMapper
       id: copy.id,
       createdAt: copy.createdAt,
       updatedAt: copy.updatedAt,
-      ...(copy.email && { email: copy.email.unpack() }),
-      ...(copy.phone && { phone: copy.phone.unpack() }),
+      email: copy.email.unpack(),
       password: copy.password.unpack(),
       role: copy.role,
     };
@@ -31,8 +29,7 @@ export class UserMapper
       createdAt: new Date(record.createdAt),
       updatedAt: new Date(record.updatedAt),
       props: {
-        ...(record.email && { email: new Email(record.email) }),
-        ...(record.phone && { phone: new PhoneNumber(record.phone) }),
+        email: new Email(record.email),
         password: Password.fromHashed(record.password),
         role: record.role,
       },
@@ -44,7 +41,6 @@ export class UserMapper
     const props = entity.getProps();
     const response = new UserResponseDto(entity);
     response.email = props.email?.unpack();
-    response.phone = props.phone?.unpack();
     return response;
   }
 

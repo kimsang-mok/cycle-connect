@@ -23,7 +23,6 @@ export class UserEntity extends AggregateRoot<UserProps> {
       new UserCreatedDomainEvent({
         aggregateId: id,
         email: props.email,
-        phone: props.phone,
         password: props.password,
         role: props.role,
       }),
@@ -44,12 +43,6 @@ export class UserEntity extends AggregateRoot<UserProps> {
     // entity business rules validation to protect it's invariant before saving entity to a database
     if (!this.props.password) {
       throw new ArgumentNotProvidedException('Password must be provided');
-    }
-
-    if (!this.props.email && !this.props.phone) {
-      throw new ArgumentNotProvidedException(
-        'At least one of email or phone must be provided',
-      );
     }
 
     if (!Object.values(UserRoles).includes(this.props.role)) {

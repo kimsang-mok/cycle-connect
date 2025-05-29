@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateUserCommand } from './create-user.command';
-import { Err, Ok, Result } from 'oxide.ts';
 import { AggregateId } from '@src/libs/ddd';
 import { UserAlreadyExistsError } from '../../user.errors';
 import { Inject } from '@nestjs/common';
@@ -8,31 +7,23 @@ import { USER_REPOSITORY } from '../../user.di-tokens';
 import { UserRepositoryPort } from '../../database/ports/user.repository.port';
 import { UserEntity } from '../../domain/user.entity';
 import { ConflictException } from '@src/libs/exceptions';
-import { Email } from '../../value-objects/email.value-object';
-import { PhoneNumber } from '../../value-objects/phone-number.value-object';
-import { Password } from '../../value-objects/password.value-object';
+import { Email } from '../../domain/value-objects/email.value-object';
+import { Password } from '../../domain/value-objects/password.value-object';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserService
-  implements
-    ICommandHandler<
-      CreateUserCommand,
-      Result<AggregateId, UserAlreadyExistsError>
-    >
+  implements ICommandHandler<CreateUserCommand, AggregateId>
 {
   constructor(
     @Inject(USER_REPOSITORY)
     protected readonly userRepo: UserRepositoryPort,
   ) {}
 
-  async execute(
-    command: CreateUserCommand,
-  ): Promise<Result<AggregateId, UserAlreadyExistsError>> {
+  async execute(command: CreateUserCommand): Promise<AggregateId> {
     const hashedPassword = await Password.create(command.password);
 
     const user = UserEntity.create({
-      ...(command.email && { email: new Email(command.email) }),
-      ...(command.phone && { phone: new PhoneNumber(command.phone) }),
+      email: new Email(command.email),
       password: hashedPassword,
       role: command.role,
     });
@@ -41,10 +32,10 @@ export class CreateUserService
       /* Wrapping operation in a transaction to make sure
          that all domain events are processed atomically */
       await this.userRepo.transaction(async () => this.userRepo.insert(user));
-      return Ok(user.id);
+      return user.id;
     } catch (error: any) {
       if (error instanceof ConflictException) {
-        return Err(new UserAlreadyExistsError(error));
+        throw new UserAlreadyExistsError(error);
       }
       throw error;
     }

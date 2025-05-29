@@ -1,5 +1,3 @@
-import { z } from 'zod';
-import { UserRoles } from '../../domain/user.types';
 import { Injectable, Logger } from '@nestjs/common';
 import { SqlRepositoryBase } from '@src/libs/db/sql-repository.base';
 import { UserEntity } from '../../domain/user.entity';
@@ -8,23 +6,7 @@ import { InjectPool } from 'nestjs-slonik';
 import { DatabasePool, sql } from 'slonik';
 import { UserMapper } from '../../user.mapper';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-
-/**
- * Runtime validation of user object for extra safety (in case database schema changes).
- * https://github.com/gajus/slonik#runtime-validation
- * If you prefer to avoid performance penalty of validation, use interfaces instead.
- */
-export const userSchema = z.object({
-  id: z.string().uuid().refine(Boolean),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-  email: z.string().email().optional().nullable(),
-  phone: z.string().min(8).max(15).optional().nullable(),
-  password: z.string().min(6),
-  role: z.nativeEnum(UserRoles),
-});
-
-export type UserModel = z.TypeOf<typeof userSchema>;
+import { UserModel, userSchema } from '../user.schema';
 
 /**
  *  Repository is used for retrieving/saving domain entities

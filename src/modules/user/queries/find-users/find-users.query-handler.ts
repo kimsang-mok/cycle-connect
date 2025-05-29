@@ -2,7 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Paginated } from '@src/libs/ddd';
 import { PaginatedParams, PaginatedQueryBase } from '@src/libs/ddd/query.base';
 import { Ok, Result } from 'oxide.ts';
-import { UserModel, userSchema } from '../../database/adapters/user.repository';
+import { UserModel, userSchema } from '../../database/user.schema';
 import { InjectPool } from 'nestjs-slonik';
 import { DatabasePool, sql } from 'slonik';
 

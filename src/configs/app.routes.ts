@@ -25,6 +25,7 @@ export const routesV1 = {
     register: `${authRoot}/register`,
     login: `${authRoot}/login`,
     verify: `${authRoot}/verify`,
+    refresh: `${authRoot}/refresh`,
   },
   bike: {
     tag: 'Bike',

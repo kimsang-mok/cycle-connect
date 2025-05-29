@@ -1,37 +1,66 @@
 import { Logger, Module, Provider } from '@nestjs/common';
-import { RegisterUserController } from './commands/register-user/register-user.controller';
 import { CqrsModule } from '@nestjs/cqrs';
-import { LoginUserController } from './commands/login-user/login-user.controller';
-import { AuthenticateUserHandler } from './handlers/authenticate-user.handler';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CookiesService } from './libs/cookies/cookies.service';
-import { LoginUserService } from './commands/login-user/login-user.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './libs/strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './libs/strategies/jwt-refresh.strategy';
-import { VerifyUserController } from './commands/verify-user/verify-user.controller';
-import { VerifyUserService } from './commands/verify-user/verify-user.service';
+import {
+  SESSION_REPOSITORY,
+  USER_VERIFICATION_REPOSITORY,
+} from './auth.di-tokens';
+import { UserVerificationRepository } from './database/adapters/user-verification.repository';
+import { SessionRepository } from './database/adapters/session.repository';
+import { AuthController } from './auth.controller';
+import { AuthService } from './services/auth.service';
+import { CreateUserVerificationWhenUserIsCreatedDomainEventHandler } from './event-handlers/create-user-verification-when-user-is-created.domain-event-handler';
+import { AuthenticateUserService } from './services/authenticate-user.service';
+import { SessionService } from './services/session.service';
+import { UserVerificationMapper } from './user-verification.mapper';
+import { SessionMapper } from './session.mapper';
 
-const commandHandlers: Provider[] = [LoginUserService, VerifyUserService];
+const controllers = [AuthController];
 
-const strategies = [JwtStrategy, JwtRefreshStrategy];
-
-const controllers = [
-  RegisterUserController,
-  LoginUserController,
-  VerifyUserController,
+const services: Provider[] = [
+  AuthService,
+  CookiesService,
+  AuthenticateUserService,
+  SessionService,
 ];
+
+const commandHandlers: Provider[] = [];
+
+const eventHandlers: Provider[] = [
+  CreateUserVerificationWhenUserIsCreatedDomainEventHandler,
+];
+
+const strategies: Provider[] = [JwtStrategy, JwtRefreshStrategy];
+
+const repositories: Provider[] = [
+  {
+    provide: USER_VERIFICATION_REPOSITORY,
+    useClass: UserVerificationRepository,
+  },
+  {
+    provide: SESSION_REPOSITORY,
+    useClass: SessionRepository,
+  },
+];
+
+const mappers: Provider[] = [UserVerificationMapper, SessionMapper];
 
 @Module({
   imports: [CqrsModule, UserModule, PassportModule, JwtModule.register({})],
   controllers: [...controllers],
   providers: [
     Logger,
-    AuthenticateUserHandler,
-    CookiesService,
+    ...services,
     ...strategies,
     ...commandHandlers,
+    ...eventHandlers,
+    ...repositories,
+    ...mappers,
   ],
   exports: [],
 })

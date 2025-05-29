@@ -20,7 +20,7 @@ import { PaginatedQueryRequestDto } from '@src/libs/api/paginated-query.request.
 import { FindUsersQuery } from './find-users.query-handler';
 import { Result } from 'oxide.ts';
 import { Paginated } from '@src/libs/ddd';
-import { UserModel } from '../../database/adapters/user.repository';
+import { UserModel } from '../../database/user.schema';
 import { ResponseBase } from '@src/libs/api/response.base';
 import { JwtAuthGuard } from '@src/modules/auth/libs/guard/jwt-auth-guard';
 import { RolesGuard } from '@src/modules/auth/libs/guard/roles.guard';
@@ -67,7 +67,6 @@ export class FindUsersController {
       data: paginated.data.map((user) => ({
         ...new ResponseBase(user),
         email: user.email,
-        phone: user.phone,
       })),
     });
   }

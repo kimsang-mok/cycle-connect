@@ -1,35 +1,22 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsEnum,
-  IsOptional,
   IsString,
-  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import { UserRoles } from '../../domain/user.types';
 
 export class CreateUserRequestDto {
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: 'john@gmail.com',
     description: 'User email address (optional if phone is provided)',
   })
-  @IsOptional()
   @MaxLength(320)
   @MinLength(5)
   @IsEmail()
-  readonly email?: string;
-
-  @ApiPropertyOptional({
-    example: '+85512345678',
-    description: 'User phone number (optional if email is provided)',
-  })
-  @IsOptional()
-  @MinLength(8)
-  @MaxLength(15)
-  @Matches(/^\d+$/, { message: 'Phone number must contain only digits' })
-  readonly phone?: string;
+  readonly email: string;
 
   @ApiProperty({
     example: 'strongPassword123',
