@@ -9,7 +9,7 @@ import { TemplateResolver } from './utils/template-resolver';
   imports: [
     HttpModule.registerAsync({
       useFactory: () => ({
-        baseUrl: mailerConfig.host,
+        baseURL: mailerConfig.host,
         headers: {
           Authorization: `Bearer ${mailerConfig.password}`,
         },
