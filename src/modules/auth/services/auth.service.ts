@@ -92,9 +92,11 @@ export class AuthService {
 
       this.userVerificationRepo.save(verification);
 
-      const maybeUser = await this.userRepo.findOneById(userId);
+      const user = await this.userRepo.findOneById(userId);
 
-      const user = maybeUser.unwrap();
+      if (!user) {
+        throw new NotFoundException();
+      }
 
       const tokenData = await this.authenticateUserService.handle({
         user,
@@ -116,14 +118,14 @@ export class AuthService {
 
     const user = await this.userRepo.findOneById(userId);
 
-    if (user.isNone()) {
+    if (!user) {
       throw new UnauthorizedException();
     }
 
     const { token, refreshToken } =
       await this.authenticateUserService.getTokensData({
         id: userId,
-        role: user.unwrap().role,
+        role: user.role,
       });
 
     await this.sessionService.update(sesssion.id, {
@@ -132,7 +134,7 @@ export class AuthService {
     });
 
     return {
-      user: this.userMapper.toResponse(user.unwrap()),
+      user: this.userMapper.toResponse(user),
       token,
       refreshToken,
     };

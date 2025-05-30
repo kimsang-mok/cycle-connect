@@ -2,7 +2,6 @@ import { Controller, Param, Patch, Request, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { routesV1 } from '@src/configs/app.routes';
 import { DeactivateBikeCommand } from './deactivate-bike.command';
-import { match } from 'oxide.ts';
 import { IdResponse } from '@src/libs/api/id.response.dto';
 import { Roles } from '@src/modules/auth/roles.decorator';
 import { JwtAuthGuard } from '@src/modules/auth/libs/guard/jwt-auth-guard';
@@ -42,11 +41,6 @@ export class DeactivateBikeController {
 
     const result = await this.commandBus.execute(command);
 
-    return match(result, {
-      Ok: (id: string) => new IdResponse(id),
-      Err: (error) => {
-        throw error;
-      },
-    });
+    return new IdResponse(result);
   }
 }

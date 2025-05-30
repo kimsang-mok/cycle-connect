@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateBookingCommand } from './create-booking.command';
-import { Ok, Result } from 'oxide.ts';
-import { Inject } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import { BOOKING_REPOSITORY } from '../../booking.di-tokens';
 import { BookingRepositoryPort } from '../../database/ports/booking.repository.port';
 import { BookingAvailabityService } from '../../domain/services/booking-availability.service';
@@ -14,7 +13,7 @@ import { BIKE_REPOSITORY } from '@src/modules/bike/bike.di-tokens';
 
 @CommandHandler(CreateBookingCommand)
 export class CreateBookingService
-  implements ICommandHandler<CreateBookingCommand, Result<AggregateId, Error>>
+  implements ICommandHandler<CreateBookingCommand, AggregateId>
 {
   constructor(
     @Inject(BOOKING_REPOSITORY)
@@ -25,9 +24,7 @@ export class CreateBookingService
     protected readonly pricingService: BookingPricingServie,
   ) {}
 
-  async execute(
-    command: CreateBookingCommand,
-  ): Promise<Result<AggregateId, Error>> {
+  async execute(command: CreateBookingCommand): Promise<AggregateId> {
     const period = new RentalPeriod({
       start: new Date(command.startDate),
       end: new Date(command.endDate),
@@ -42,7 +39,11 @@ export class CreateBookingService
       throw new Error('Bike is not available at this moment');
     }
 
-    const bike = (await this.bikeRepo.findOneById(command.bikeId)).unwrap();
+    const bike = await this.bikeRepo.findOneById(command.bikeId);
+
+    if (!bike) {
+      throw new NotFoundException();
+    }
 
     if (!bike.getProps().isActive) {
       throw new Error('Bike is unavailable right now');
@@ -60,13 +61,9 @@ export class CreateBookingService
       totalPrice,
     });
 
-    try {
-      return this.bookingRepo.transaction(async () => {
-        await this.bookingRepo.insert(booking);
-        return Ok(booking.id);
-      });
-    } catch (error) {
-      throw error;
-    }
+    return this.bookingRepo.transaction(async () => {
+      await this.bookingRepo.insert(booking);
+      return booking.id;
+    });
   }
 }

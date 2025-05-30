@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { SessionRepositoryPort } from '../database/ports/session.repository.port';
 import { SessionEntity } from '../domain/session.entity';
-import { Err, Ok, Result } from 'oxide.ts';
 import { AggregateId } from '@src/libs/ddd';
 import { CreateSessionProps } from '../domain/auth.types';
 import { SESSION_REPOSITORY } from '../auth.di-tokens';
@@ -25,7 +24,7 @@ export class SessionService {
   }
 
   async findById(id: string): Promise<SessionEntity | null> {
-    return (await this.sessionRepo.findOneById(id)).unwrap();
+    return await this.sessionRepo.findOneById(id);
   }
 
   async findOneByRefreshToken(
@@ -50,12 +49,11 @@ export class SessionService {
     return session;
   }
 
-  async deleteById(id: string): Promise<Result<boolean, NotFoundException>> {
-    const found = await this.sessionRepo.findOneById(id);
-    if (found.isNone()) return Err(new NotFoundException());
-    const session = found.unwrap();
+  async deleteById(id: string): Promise<boolean> {
+    const session = await this.sessionRepo.findOneById(id);
+    if (!session) throw new NotFoundException();
     const result = await this.sessionRepo.delete(session);
-    return Ok(result);
+    return result;
   }
 
   async deleteByRefreshToken(conditions: {

@@ -18,7 +18,6 @@ import { UserPaginatedResponseDto } from '../../dtos/user.paginated.response.dto
 import { FindUsersRequestDto } from './find-users.request.dto';
 import { PaginatedQueryRequestDto } from '@src/libs/api/paginated-query.request.dto';
 import { FindUsersQuery } from './find-users.query-handler';
-import { Result } from 'oxide.ts';
 import { Paginated } from '@src/libs/ddd';
 import { UserModel } from '../../database/user.schema';
 import { ResponseBase } from '@src/libs/api/response.base';
@@ -53,12 +52,9 @@ export class FindUsersController {
       page: queryParams?.page,
     });
 
-    const result: Result<
-      Paginated<UserModel>,
-      Error
-    > = await this.queryBus.execute(query);
+    const result: Paginated<UserModel> = await this.queryBus.execute(query);
 
-    const paginated = result.unwrap();
+    const paginated = result;
 
     // Whitelisting returned properties
 
