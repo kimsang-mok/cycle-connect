@@ -2,9 +2,7 @@ import { Command, CommandProps } from '@src/libs/ddd';
 import { UserRoles } from '../../domain/user.types';
 
 export class CreateUserCommand extends Command {
-  readonly email?: string;
-
-  readonly phone?: string;
+  readonly email: string;
 
   readonly password: string;
 
@@ -13,7 +11,6 @@ export class CreateUserCommand extends Command {
   constructor(props: CommandProps<CreateUserCommand>) {
     super(props);
     this.email = props.email;
-    this.phone = props.phone;
     this.password = props.password;
     this.role = props.role;
   }

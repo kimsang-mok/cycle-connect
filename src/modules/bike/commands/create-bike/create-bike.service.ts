@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateBikeCommand } from './create-bike.command';
-import { Ok, Result } from 'oxide.ts';
 import { AggregateId } from '@src/libs/ddd';
 import { Inject } from '@nestjs/common';
 import { BIKE_REPOSITORY } from '../../bike.di-tokens';
@@ -9,23 +8,19 @@ import { BikeEntity } from '../../domain/bike.entity';
 
 @CommandHandler(CreateBikeCommand)
 export class CreateBikeService
-  implements ICommandHandler<CreateBikeCommand, Result<AggregateId, Error>>
+  implements ICommandHandler<CreateBikeCommand, AggregateId>
 {
   constructor(
     @Inject(BIKE_REPOSITORY)
     protected readonly bikeRepo: BikeRepositoryPort,
   ) {}
 
-  execute(command: CreateBikeCommand): Promise<Result<string, Error>> {
+  execute(command: CreateBikeCommand): Promise<string> {
     const bike = BikeEntity.create(command);
 
-    try {
-      return this.bikeRepo.transaction(async () => {
-        await this.bikeRepo.insert(bike);
-        return Ok(bike.id);
-      });
-    } catch (error) {
-      throw error;
-    }
+    return this.bikeRepo.transaction(async () => {
+      await this.bikeRepo.insert(bike);
+      return bike.id;
+    });
   }
 }

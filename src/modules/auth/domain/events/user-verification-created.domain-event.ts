@@ -5,7 +5,7 @@ export class UserVerificationCreatedDomainEvent extends DomainEvent {
 
   readonly target: string;
 
-  readonly code: string;
+  readonly token: string;
 
   readonly userId: string;
 
@@ -15,7 +15,7 @@ export class UserVerificationCreatedDomainEvent extends DomainEvent {
     super(props);
     this.expiresAt = props.expiresAt;
     this.target = props.target;
-    this.code = props.code;
+    this.token = props.token;
     this.userId = props.userId;
     this.verified = props.verified;
   }

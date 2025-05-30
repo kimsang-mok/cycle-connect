@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { BikeRepositoryPort } from '../database/ports/bike.repository.port';
 import { OnEvent } from '@nestjs/event-emitter';
 import { BookingCreatedDomainEvent } from '@src/modules/booking/domain/events/booking-created.domain-event';
@@ -13,7 +13,11 @@ export class MakeBikeUnavailableWhenBookingIsCreated {
 
   @OnEvent(BookingCreatedDomainEvent.name, { suppressErrors: false })
   async handle(event: BookingCreatedDomainEvent) {
-    const bike = (await this.bikeRepo.findOneById(event.bikeId)).unwrap();
+    const bike = await this.bikeRepo.findOneById(event.bikeId);
+
+    if (!bike) {
+      throw new NotFoundException();
+    }
 
     bike.deactivate();
 

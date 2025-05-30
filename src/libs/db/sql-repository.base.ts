@@ -4,7 +4,6 @@ import { Mapper } from '@libs/ddd';
 import { RepositoryPort } from '@libs/ddd';
 import { ConflictException } from '@libs/exceptions';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { None, Option, Some } from 'oxide.ts';
 import {
   DatabasePool,
   DatabaseTransactionConnection,
@@ -37,13 +36,13 @@ export abstract class SqlRepositoryBase<
     protected readonly logger: LoggerPort,
   ) {}
 
-  async findOneById(id: string): Promise<Option<Aggregate>> {
+  async findOneById(id: string): Promise<Aggregate | null> {
     const query = sql.type(this.schema)`SELECT * FROM ${sql.identifier([
       this.tableName,
     ])} WHERE id = ${id}`;
 
     const result = await this.pool.query(query);
-    return result.rows[0] ? Some(this.mapper.toDomain(result.rows[0])) : None;
+    return result.rows[0] ? this.mapper.toDomain(result.rows[0]) : null;
   }
 
   async findAll(): Promise<Aggregate[]> {

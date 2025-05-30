@@ -1,8 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Paginated } from '@src/libs/ddd';
 import { PaginatedParams, PaginatedQueryBase } from '@src/libs/ddd/query.base';
-import { Ok, Result } from 'oxide.ts';
-import { UserModel, userSchema } from '../../database/adapters/user.repository';
+import { UserModel, userSchema } from '../../database/user.schema';
 import { InjectPool } from 'nestjs-slonik';
 import { DatabasePool, sql } from 'slonik';
 
@@ -17,16 +16,14 @@ export class FindUsersQuery extends PaginatedQueryBase {
 
 @QueryHandler(FindUsersQuery)
 export class FindUsersQueryHandler
-  implements IQueryHandler<FindUsersQuery, Result<Paginated<UserModel>, Error>>
+  implements IQueryHandler<FindUsersQuery, Paginated<UserModel>>
 {
   constructor(
     @InjectPool()
     private readonly pool: DatabasePool,
   ) {}
 
-  async execute(
-    query: FindUsersQuery,
-  ): Promise<Result<Paginated<UserModel>, Error>> {
+  async execute(query: FindUsersQuery): Promise<Paginated<UserModel>> {
     /**
      * Constructing a query with Slonik.
      * More info: https://contra.com/p/AqZWWoUB-writing-composable-sql-using-java-script
@@ -41,13 +38,11 @@ export class FindUsersQueryHandler
 
     const records = await this.pool.query(statement);
 
-    return Ok(
-      new Paginated({
-        data: records.rows,
-        count: records.rowCount,
-        limit: query.limit,
-        page: query.page,
-      }),
-    );
+    return new Paginated({
+      data: records.rows,
+      count: records.rowCount,
+      limit: query.limit,
+      page: query.page,
+    });
   }
 }

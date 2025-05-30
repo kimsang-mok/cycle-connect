@@ -2,9 +2,7 @@ import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBikeRequestDto } from './create-bike.request.dto';
 import { CreateBikeCommand } from './create-bike.command';
-import { Result } from 'oxide.ts';
 import { AggregateId } from '@src/libs/ddd';
-import { match } from 'oxide.ts';
 import { IdResponse } from '@src/libs/api/id.response.dto';
 import { routesV1 } from '@src/configs/app.routes';
 import {
@@ -42,14 +40,8 @@ export class CreateBikeController {
       pricePerDay: new Price(body.pricePerDay),
     });
 
-    const result: Result<AggregateId, any> =
-      await this.commandBus.execute(command);
+    const result: AggregateId = await this.commandBus.execute(command);
 
-    return match(result, {
-      Ok: (id: string) => new IdResponse(id),
-      Err: (error) => {
-        throw error;
-      },
-    });
+    return new IdResponse(result);
   }
 }

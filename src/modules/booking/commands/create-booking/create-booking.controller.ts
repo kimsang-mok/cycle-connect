@@ -15,9 +15,7 @@ import { UserRoles } from '@src/modules/user/domain/user.types';
 import { CreateBookingRequestDto } from './create-booking.request.dto';
 import { IdResponse } from '@src/libs/api/id.response.dto';
 import { CreateBookingCommand } from './create-booking.command';
-import { Result } from 'oxide.ts';
 import { AggregateId } from '@src/libs/ddd';
-import { match } from 'oxide.ts';
 
 @Controller(routesV1.version)
 @ApiTags(routesV1.booking.tag)
@@ -42,11 +40,8 @@ export class CreateBookingController {
       customerId: request.user.id,
     });
 
-    const result: Result<AggregateId, any> =
-      await this.commandBus.execute(command);
+    const result: AggregateId = await this.commandBus.execute(command);
 
-    return match(result, {
-      Ok: (id: string) => new IdResponse(id),
-    });
+    return new IdResponse(result);
   }
 }
