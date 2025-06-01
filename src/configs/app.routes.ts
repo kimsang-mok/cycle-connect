@@ -9,6 +9,7 @@ const usersRoot = 'users';
 const authRoot = 'auth';
 const bikeRoot = 'bikes';
 const bookingRoot = 'bookings';
+const uploadRoot = 'uploads';
 
 // Api Versions
 const v1 = 'v1';
@@ -36,5 +37,9 @@ export const routesV1 = {
   booking: {
     tag: 'Booking',
     root: bookingRoot,
+  },
+  upload: {
+    tag: 'Upload',
+    presign: `${uploadRoot}/presign`,
   },
 };
