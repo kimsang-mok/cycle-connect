@@ -16,7 +16,16 @@ export class CreateBikeService
   ) {}
 
   execute(command: CreateBikeCommand): Promise<string> {
-    const bike = BikeEntity.create(command);
+    const bike = BikeEntity.create({
+      type: command.type,
+      model: command.model,
+      ownerId: command.ownerId,
+      enginePower: command.enginePower,
+      description: command.description,
+      pricePerDay: command.pricePerDay,
+      photoKeys: command.photoKeys,
+      thumbnailKey: command.thumbnailKey,
+    });
 
     return this.bikeRepo.transaction(async () => {
       await this.bikeRepo.insert(bike);

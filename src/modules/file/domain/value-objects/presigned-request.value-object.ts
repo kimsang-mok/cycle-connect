@@ -18,8 +18,6 @@ export class PresignedRequest extends ValueObject<PresignedRequestProps> {
   protected validate(props: PresignedRequestProps): void {
     const { filename, mimetype, uploaderId } = props;
 
-    console.log(filename);
-
     if (!filename || typeof filename !== 'string') {
       throw new Error('Invalid filename');
     }

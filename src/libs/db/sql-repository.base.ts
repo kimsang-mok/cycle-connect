@@ -19,6 +19,7 @@ import {
 import { ZodTypeAny, TypeOf, ZodObject } from 'zod';
 import { LoggerPort } from '../ports/logger.port';
 import { ObjectLiteral } from '../types';
+import { ArraySqlToken, TimestampSqlToken } from 'slonik/dist/src/types';
 
 export abstract class SqlRepositoryBase<
   Aggregate extends AggregateRoot<any>,
@@ -121,24 +122,19 @@ export abstract class SqlRepositoryBase<
   }
 
   async save(entity: Aggregate): Promise<void> {
+    if ('updatedAt' in entity.getProps()) {
+      entity.getProps().updatedAt = new Date();
+    }
+
     const record = this.mapper.toPersistence(entity);
 
     const updates = Object.entries(record)
       .filter(([key, value]) => key !== 'id' && value !== undefined)
       .map(([key, value]) => {
-        if (
-          typeof value === 'string' ||
-          typeof value === 'number' ||
-          typeof value === 'boolean'
-        ) {
-          return sql`${sql.identifier([key])} = ${value}`;
-        }
+        const column = sql.identifier([key]);
+        const sqlValue = this.toSqlValue(value);
 
-        if (value instanceof Date) {
-          return sql`${sql.identifier([key])} = ${sql.timestamp(value)}`;
-        }
-
-        throw new Error(`Unsupported value type for column "${key}"`);
+        return sql`${column} = ${sqlValue}`;
       });
 
     const query = sql`
@@ -146,7 +142,7 @@ export abstract class SqlRepositoryBase<
       SET ${sql.join(updates, sql`, `)}
       WHERE id = ${record.id as PrimitiveValueExpression}`;
 
-    await this.writeQuery(query, entity);
+    await this.writeQuery(query, entity, 'update');
   }
 
   /**
@@ -160,6 +156,7 @@ export abstract class SqlRepositoryBase<
       T extends MixedRow ? T : Record<string, PrimitiveValueExpression>
     >,
     entity: Aggregate | Aggregate[],
+    operation: 'insert' | 'update' = 'insert',
   ): Promise<
     QueryResult<
       T extends MixedRow
@@ -174,9 +171,9 @@ export abstract class SqlRepositoryBase<
     const entityIds = entities.map((e) => e.id);
 
     this.logger.debug(
-      `[${RequestContextService.getRequestId()}] writing ${
+      `[${RequestContextService.getRequestId()}] ${operation.toUpperCase()} ${
         entities.length
-      } entities to "${this.tableName}" table: ${entityIds}`,
+      } entity(ies) into "${this.tableName}": ${entityIds.join(', ')}`,
     );
 
     const result = await this.pool.query(sql);
@@ -204,14 +201,11 @@ export abstract class SqlRepositoryBase<
     const values: any = [];
     const propertyNames: IdentifierSqlToken[] = [];
 
-    entries.forEach((entry) => {
-      if (entry[0] && entry[1] !== undefined) {
-        propertyNames.push(sql.identifier([entry[0]]));
-        if (entry[1] instanceof Date) {
-          values.push(sql.timestamp(entry[1]));
-        } else {
-          values.push(entry[1]);
-        }
+    entries.forEach(([key, value]) => {
+      if (key && value !== undefined) {
+        propertyNames.push(sql.identifier([key]));
+
+        values.push(this.toSqlValue(value));
       }
     });
 
@@ -224,6 +218,18 @@ export abstract class SqlRepositoryBase<
 
     const parsedQuery = query;
     return parsedQuery;
+  }
+
+  private toSqlValue(
+    value: unknown,
+  ):
+    | SqlSqlToken
+    | PrimitiveValueExpression
+    | TimestampSqlToken
+    | ArraySqlToken {
+    if (value instanceof Date) return sql.timestamp(value);
+    if (Array.isArray(value)) return sql.array(value, 'text'); // or infer type
+    return value as PrimitiveValueExpression;
   }
 
   /**
