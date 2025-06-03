@@ -8,6 +8,8 @@ export interface BikeProps {
   pricePerDay: Price;
   description: string;
   isActive: boolean;
+  photoKeys: string[];
+  thumbnailKey: string;
 }
 
 export interface CreateBikeProps {
@@ -17,6 +19,8 @@ export interface CreateBikeProps {
   enginePower: number;
   pricePerDay: Price;
   description: string;
+  photoKeys: string[];
+  thumbnailKey?: string;
 }
 
 export enum BikeTypes {
@@ -29,4 +33,6 @@ export interface UpdateDetailsProps {
   pricePerDay: number;
   enginePower?: number;
   model?: string;
+  photoKeys?: string[];
+  thumbnailKey?: string;
 }

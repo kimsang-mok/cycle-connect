@@ -17,12 +17,22 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
     "paths": {
       "@src/*": ["src/*"],
       "@modules/*": ["src/modules/*"],
       "@config/*": ["src/configs/*"],
-      "@libs/*": ["src/libs/*"],
-      "@tests/*": ["tests/*"]
+      "@libs/*": ["src/libs/*"]
     }
-  }
+  },
+  "include": [
+    "src/**/*",
+    "database/**/*",
+    "tests/**/*",
+    "test-container/**/*",
+    "tests/global.d.ts",
+    "jest.unit.config.ts",
+    "jest.integration.config.ts",
+    ".env.test.ts"
+  ]
 }

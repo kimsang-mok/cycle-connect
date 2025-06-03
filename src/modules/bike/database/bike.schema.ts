@@ -12,6 +12,8 @@ export const bikeSchema = z.object({
   description: z.string(),
   pricePerDay: z.number(),
   isActive: z.boolean(),
+  photoKeys: z.array(z.string()),
+  thumbnailKey: z.string(),
 });
 
 export type BikeModel = z.TypeOf<typeof bikeSchema>;

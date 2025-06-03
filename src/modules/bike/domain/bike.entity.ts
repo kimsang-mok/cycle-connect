@@ -14,7 +14,16 @@ export class BikeEntity extends AggregateRoot<BikeProps> {
 
   static create(create: CreateBikeProps) {
     const id = randomUUID();
-    const props: BikeProps = { ...create, isActive: true };
+
+    const photoKeys = create.photoKeys ?? [];
+    const thumbnailKey = create.thumbnailKey ?? photoKeys[0] ?? '';
+
+    const props: BikeProps = {
+      ...create,
+      photoKeys,
+      thumbnailKey,
+      isActive: true,
+    };
     const bike = new BikeEntity({ id, props });
     return bike;
   }
@@ -28,6 +37,8 @@ export class BikeEntity extends AggregateRoot<BikeProps> {
     pricePerDay,
     enginePower,
     model,
+    photoKeys,
+    thumbnailKey,
   }: UpdateDetailsProps): void {
     this.props.description = description;
     this.props.pricePerDay = new Price(pricePerDay);
@@ -36,6 +47,12 @@ export class BikeEntity extends AggregateRoot<BikeProps> {
     }
     if (model !== undefined) {
       this.props.model = model;
+    }
+    if (photoKeys) {
+      this.props.photoKeys = photoKeys;
+    }
+    if (thumbnailKey) {
+      this.props.thumbnailKey = thumbnailKey;
     }
   }
 
@@ -59,5 +76,13 @@ export class BikeEntity extends AggregateRoot<BikeProps> {
     return !extistingBookings.some((b) => b.overlaps(period));
   }
 
-  validate(): void {}
+  validate(): void {
+    if (
+      this.props.photoKeys?.length > 0 &&
+      this.props.thumbnailKey &&
+      !this.props.photoKeys.includes(this.props.thumbnailKey)
+    ) {
+      throw new Error('Thumbnail must be one of the photoKeys');
+    }
+  }
 }

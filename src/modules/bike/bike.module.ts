@@ -10,11 +10,15 @@ import { DeactivateBikeService } from './commands/deactivate-bike/deactivate-bik
 import { ActivateBikeController } from './commands/activate-bike/activate-bike.controller';
 import { DeactivateBikeController } from './commands/deactivate-bike/deactivate-bike.controller';
 import { MakeBikeUnavailableWhenBookingIsCreated } from './event-handlers/make-bike-unavailable-when-booking-is-created.domain-event.handler';
+import { FileModule } from '../file/file.module';
+import { FindBikesQueryHandler } from './queries/find-bikes/find-bikes.query-handler';
+import { FindBikesController } from './queries/find-bikes/find-bikes.controller';
 
 const controllers = [
   CreateBikeController,
   ActivateBikeController,
   DeactivateBikeController,
+  FindBikesController,
 ];
 
 const commandHandlers: Provider[] = [
@@ -22,6 +26,8 @@ const commandHandlers: Provider[] = [
   ActivateBikeService,
   DeactivateBikeService,
 ];
+
+const queryHandlers: Provider[] = [FindBikesQueryHandler];
 
 const repositories: Provider[] = [
   {
@@ -35,12 +41,13 @@ const eventHandlers: Provider[] = [MakeBikeUnavailableWhenBookingIsCreated];
 const mappers: Provider[] = [BikeMapper];
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, FileModule],
   controllers: [...controllers],
   providers: [
     Logger,
     ...repositories,
     ...commandHandlers,
+    ...queryHandlers,
     ...eventHandlers,
     ...mappers,
   ],

@@ -29,4 +29,21 @@ export class BikeResponseDto extends ResponseBase {
 
   @ApiProperty({ example: true, description: 'Availability state' })
   isActive: boolean;
+
+  @ApiProperty({
+    example:
+      'https://bucket.s3.region.amazonaws.com/uploads/user-123/photo1.jpg',
+    description: 'Public S3 URL of thumbnail image',
+  })
+  thumbnailUrl: string;
+
+  @ApiProperty({
+    type: [String],
+    example: [
+      'https://bucket.s3.region.amazonaws.com/uploads/user-123/photo1.jpg',
+      'https://bucket.s3.region.amazonaws.com/uploads/user-123/photo2.jpg',
+    ],
+    description: 'Full S3 URLs to bike images',
+  })
+  photoUrls: string[];
 }

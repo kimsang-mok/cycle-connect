@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { BikeTypes } from '../../domain/bike.types';
 
 export class CreateBikeRequestDto {
@@ -27,4 +33,18 @@ export class CreateBikeRequestDto {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @ApiProperty({
+    type: [String],
+    example: ['uploads/user-123/photo1.jpg', 'uploads/user-123/photo2.jpg'],
+  })
+  @IsArray()
+  @IsString({ each: true })
+  photoKeys: string[];
+
+  @ApiProperty({
+    example: 'uploads/user-123/photo1.jpg',
+    description: 'Key of the image used as thumbnail',
+  })
+  thumbnailKey?: string;
 }

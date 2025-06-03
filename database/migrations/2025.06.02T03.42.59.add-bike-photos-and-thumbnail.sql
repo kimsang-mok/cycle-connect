@@ -1,0 +1,3 @@
+ALTER TABLE "bikes"
+ADD COLUMN "photoKeys" TEXT[] NOT NULL DEFAULT '{}',
+ADD COLUMN "thumbnailKey" TEXT NOT NULL DEFAULT '';
