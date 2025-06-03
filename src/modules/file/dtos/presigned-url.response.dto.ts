@@ -8,7 +8,7 @@ export class PresignedUrlResponseDto {
 
   @ApiProperty({
     example:
-      'https://your-bucket.s3.amazonaws.com/uploads/user-123/1717265567-abc123.jpg?...signature',
+      'https://bucket.s3.amazonaws.com/uploads/user-123/1717265567-abc123.jpg?...signature',
   })
   url: string;
 }

@@ -65,8 +65,6 @@ export class BikeMapper
     response.pricePerDay = props.pricePerDay.unpack();
     response.description = props.description;
     response.isActive = props.isActive;
-    // response.photoKeys = props.photoKeys;
-    // response.thumbnailKey = props.thumbnailKey;
     response.photoUrls = props.photoKeys.map((key) =>
       this.fileUrlResolver.resolveUrl(key),
     );
