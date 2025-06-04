@@ -10,6 +10,10 @@ import { BookingCreatedDomainEvent } from './events/booking-created.domain-event
 import { BookingConfirmedDomainEvent } from './events/booking-confirmed.domain-event';
 import { BookingCancelledDomainEvent } from './events/booking-cancelled.domain-event';
 import { BookingCompletedDomainEvent } from './events/booking-completed.domain-event';
+import {
+  CannotCancelBookingError,
+  CannotCompleteUnconfirmedBookingError,
+} from '../booking.errors';
 
 export class BookingEntity extends AggregateRoot<BookingProps> {
   protected readonly _id: AggregateId;
@@ -55,7 +59,7 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
       this.props.status === BookingStatus.cancelled ||
       this.props.status === BookingStatus.completed
     ) {
-      throw new Error('Cannot cancel a completed or already cancelled booking');
+      throw new CannotCancelBookingError();
     }
 
     this.props.status = BookingStatus.cancelled;
@@ -70,7 +74,7 @@ export class BookingEntity extends AggregateRoot<BookingProps> {
 
   complete(): void {
     if (this.props.status !== BookingStatus.confirmed) {
-      throw new Error('Only confirmed bookings can be completed');
+      throw new CannotCompleteUnconfirmedBookingError();
     }
     this.props.status = BookingStatus.completed;
     this.addEvent(

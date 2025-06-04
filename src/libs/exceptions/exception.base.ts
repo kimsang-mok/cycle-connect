@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common';
+
 export interface SerializedException {
   message: string;
   code: string;
@@ -35,6 +37,11 @@ export abstract class ExceptionBase extends Error {
   ) {
     super(message);
     Error.captureStackTrace(this, this.constructor);
+  }
+
+  // default, override in subclasses
+  getStatus(): HttpStatus {
+    return HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
   /**

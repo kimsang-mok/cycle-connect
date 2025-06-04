@@ -1,9 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { DeactivateBikeCommand } from './deactivate-bike.command';
 import { AggregateId } from '@src/libs/ddd';
-import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { BIKE_REPOSITORY } from '../../bike.di-tokens';
 import { BikeRepositoryPort } from '../../database/ports/bike.repository.port';
+import { NotFoundException } from '@src/libs/exceptions';
+import { BikeOwnershipError } from '../../bike.errors';
 
 @CommandHandler(DeactivateBikeCommand)
 export class DeactivateBikeService
@@ -22,7 +24,7 @@ export class DeactivateBikeService
     }
 
     if (bike.getProps().ownerId !== command.requesterId) {
-      throw new ForbiddenException('You do not own the bike');
+      throw new BikeOwnershipError();
     }
 
     bike.deactivate();

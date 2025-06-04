@@ -1,5 +1,6 @@
 import { ValueObject } from '@src/libs/ddd';
 import { PresignedRequestProps } from '../file-uploader.types';
+import { ArgumentInvalidException } from '@src/libs/exceptions';
 
 export class PresignedRequest extends ValueObject<PresignedRequestProps> {
   private readonly extension: string;
@@ -9,7 +10,7 @@ export class PresignedRequest extends ValueObject<PresignedRequestProps> {
 
     const split = this.props.filename.split('.');
     if (split.length < 2) {
-      throw new Error('Filename must include an extension');
+      throw new ArgumentInvalidException('Filename must include an extension');
     }
 
     this.extension = split.pop()!;
@@ -19,15 +20,15 @@ export class PresignedRequest extends ValueObject<PresignedRequestProps> {
     const { filename, mimetype, uploaderId } = props;
 
     if (!filename || typeof filename !== 'string') {
-      throw new Error('Invalid filename');
+      throw new ArgumentInvalidException('Invalid filename');
     }
 
     if (!mimetype || typeof mimetype !== 'string') {
-      throw new Error('Invalid mimetype');
+      throw new ArgumentInvalidException('Invalid mimetype');
     }
 
     if (!uploaderId || typeof uploaderId !== 'string') {
-      throw new Error('Invalid uploaderId');
+      throw new ArgumentInvalidException('Invalid uploaderId');
     }
   }
 

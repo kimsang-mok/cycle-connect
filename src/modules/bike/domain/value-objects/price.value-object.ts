@@ -1,4 +1,5 @@
 import { DomainPrimitive, ValueObject } from '@src/libs/ddd';
+import { ArgumentInvalidException } from '@src/libs/exceptions';
 
 export class Price extends ValueObject<number> {
   constructor(value: number) {
@@ -9,7 +10,7 @@ export class Price extends ValueObject<number> {
     const { value } = props;
 
     if (value < 0) {
-      throw new Error('Price amount must be non-negative');
+      throw new ArgumentInvalidException('Price amount must be non-negative');
     }
   }
 

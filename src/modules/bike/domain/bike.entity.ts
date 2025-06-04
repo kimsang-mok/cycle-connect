@@ -8,6 +8,7 @@ import {
 import { randomUUID } from 'crypto';
 import { RentalPeriod } from './value-objects/rental-period.value-object';
 import { Price } from './value-objects/price.value-object';
+import { ArgumentInvalidException } from '@src/libs/exceptions';
 
 export class BikeEntity extends AggregateRoot<BikeProps> {
   protected readonly _id: AggregateId;
@@ -78,11 +79,13 @@ export class BikeEntity extends AggregateRoot<BikeProps> {
 
   validate(): void {
     if (
-      this.props.photoKeys?.length > 0 &&
+      this.props.photoKeys.length > 0 &&
       this.props.thumbnailKey &&
       !this.props.photoKeys.includes(this.props.thumbnailKey)
     ) {
-      throw new Error('Thumbnail must be one of the photoKeys');
+      throw new ArgumentInvalidException(
+        'Thumbnail must be one of the photoKeys',
+      );
     }
   }
 }

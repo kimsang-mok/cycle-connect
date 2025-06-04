@@ -1,4 +1,5 @@
-import { ExceptionBase } from './exception.base';
+import { DomainErrorBase } from './domain-error.base';
+import { HttpStatus } from '@nestjs/common';
 import {
   ARGUMENT_INVALID,
   ARGUMENT_NOT_PROVIDED,
@@ -9,74 +10,85 @@ import {
 } from './exception.codes';
 
 /**
- * Used to indicate that an incorrect argument was provided to a method/function/class constructor
- *
- * @class ArgumentInvalidException
- * @extends {ExceptionBase}
+ * Incorrect argument provided (e.g., wrong type or malformed data).
  */
-export class ArgumentInvalidException extends ExceptionBase {
-  readonly code = ARGUMENT_INVALID;
-}
-
-/**
- * Used to indicate that an argument was not provided (is empty object/array, null of undefined).
- *
- * @class ArgumentNotProvidedException
- * @extends {ExceptionBase}
- */
-export class ArgumentNotProvidedException extends ExceptionBase {
-  readonly code = ARGUMENT_NOT_PROVIDED;
-}
-
-/**
- * Used to indicate that an argument is out of allowed range
- * (for example: incorrect string/array length, number not in allowed min/max range etc)
- *
- * @class ArgumentOutOfRangeException
- * @extends {ExceptionBase}
- */
-export class ArgumentOutOfRangeException extends ExceptionBase {
-  readonly code = ARGUMENT_OUT_OF_RANGE;
-}
-
-/**
- * Used to indicate conflicting entities (usually in the database)
- *
- * @class ConflictException
- * @extends {ExceptionBase}
- */
-export class ConflictException extends ExceptionBase {
-  readonly code = CONFLICT;
-}
-
-/**
- * Used to indicate that entity is not found
- *
- * @class NotFoundException
- * @extends {ExceptionBase}
- */
-export class NotFoundException extends ExceptionBase {
-  static readonly message = 'Not found';
-
-  constructor(message = NotFoundException.message) {
-    super(message);
+export class ArgumentInvalidException extends DomainErrorBase {
+  constructor(message = 'Invalid argument', cause?: Error, metadata?: unknown) {
+    super(message, ARGUMENT_INVALID, HttpStatus.BAD_REQUEST, cause, metadata);
   }
-
-  readonly code = NOT_FOUND;
 }
 
 /**
- * Used to indicate an internal server error that does not fall under all other errors
- *
- * @class InternalServerErrorException
- * @extends {ExceptionBase}
+ * Required argument is missing (e.g., undefined, null, or empty).
  */
-export class InternalServerErrorException extends ExceptionBase {
-  static readonly message = 'Internal server error';
-
-  constructor(message = InternalServerErrorException.message) {
-    super(message);
+export class ArgumentNotProvidedException extends DomainErrorBase {
+  constructor(message = 'Missing argument', cause?: Error, metadata?: unknown) {
+    super(
+      message,
+      ARGUMENT_NOT_PROVIDED,
+      HttpStatus.BAD_REQUEST,
+      cause,
+      metadata,
+    );
   }
+}
 
-  readonly code = INTERNAL_SERVER_ERROR;
+/**
+ * Argument is out of allowed range (e.g., too short, too large, etc.).
+ */
+export class ArgumentOutOfRangeException extends DomainErrorBase {
+  constructor(
+    message = 'Argument out of range',
+    cause?: Error,
+    metadata?: unknown,
+  ) {
+    super(
+      message,
+      ARGUMENT_OUT_OF_RANGE,
+      HttpStatus.BAD_REQUEST,
+      cause,
+      metadata,
+    );
+  }
+}
+
+/**
+ * Conflict in domain state (e.g., duplicate record).
+ */
+export class ConflictException extends DomainErrorBase {
+  constructor(
+    message = 'Conflict detected',
+    cause?: Error,
+    metadata?: unknown,
+  ) {
+    super(message, CONFLICT, HttpStatus.CONFLICT, cause, metadata);
+  }
+}
+
+/**
+ * Entity not found (e.g., user or resource doesn’t exist).
+ */
+export class NotFoundException extends DomainErrorBase {
+  constructor(message = 'Not found', cause?: Error, metadata?: unknown) {
+    super(message, NOT_FOUND, HttpStatus.NOT_FOUND, cause, metadata);
+  }
+}
+
+/**
+ * Catch-all for internal domain errors not covered by other types.
+ */
+export class InternalServerErrorException extends DomainErrorBase {
+  constructor(
+    message = 'Internal server error',
+    cause?: Error,
+    metadata?: unknown,
+  ) {
+    super(
+      message,
+      INTERNAL_SERVER_ERROR,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      cause,
+      metadata,
+    );
+  }
 }

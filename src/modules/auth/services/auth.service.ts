@@ -4,12 +4,7 @@ import { LoginUserResponseDto } from '../dtos/login-user.response.dto';
 import { AuthenticateUserService } from './authenticate-user.service';
 import { SessionService } from './session.service';
 import { UserRepositoryPort } from '../../user/database/ports/user.repository.port';
-import {
-  Inject,
-  NotFoundException,
-  UnauthorizedException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Inject, UnprocessableEntityException } from '@nestjs/common';
 import { UserMapper } from '@src/modules/user/user.mapper';
 import { authConfig } from '@src/configs/auth.config';
 import { USER_REPOSITORY } from '@src/modules/user/user.di-tokens';
@@ -21,6 +16,7 @@ import {
   AccountNotVerifiedError,
   InvalidCredentialError,
 } from '../auth.errors';
+import { NotFoundException } from '@src/libs/exceptions';
 
 export class AuthService {
   constructor(
@@ -95,7 +91,7 @@ export class AuthService {
       const user = await this.userRepo.findOneById(userId);
 
       if (!user) {
-        throw new NotFoundException();
+        throw new UserNotFoundError();
       }
 
       const tokenData = await this.authenticateUserService.handle({
@@ -119,7 +115,7 @@ export class AuthService {
     const user = await this.userRepo.findOneById(userId);
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UserNotFoundError();
     }
 
     const { token, refreshToken } =

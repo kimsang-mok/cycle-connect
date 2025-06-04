@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { CreateBikeRequestDto } from '@src/modules/bike/commands/create-bike/create-bike.request.dto';
 import { BikeTypes } from '@src/modules/bike/domain/bike.types';
-import { setupTestApp } from '../../utils/create-test-app';
+import { setupTestApp } from '../../utils/setup-test-app';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { MockJwtAuthGuard } from '../../mocks/mock-auth.guard';

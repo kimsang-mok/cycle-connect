@@ -1,21 +1,15 @@
-import { ExceptionBase } from '@src/libs/exceptions';
+import { HttpStatus } from '@nestjs/common';
 
-export class UserAlreadyExistsError extends ExceptionBase {
-  static readonly message = 'User already exists';
+import { defineDomainError } from '@src/libs/exceptions/define-domain-error';
 
-  public readonly code = 'USER.ALREADY_EXISTS';
+export const UserAlreadyExistsError = defineDomainError({
+  message: 'User already exists',
+  code: 'USER.ALREADY_EXISTS',
+  status: HttpStatus.CONFLICT,
+});
 
-  constructor(cause?: Error, metadata?: unknown) {
-    super(UserAlreadyExistsError.message, cause, metadata);
-  }
-}
-
-export class UserNotFoundError extends ExceptionBase {
-  static readonly message = 'User not found';
-
-  public readonly code = 'USER.NOT_FOUND';
-
-  constructor(cause?: Error, metadata?: unknown) {
-    super(UserNotFoundError.message, cause, metadata);
-  }
-}
+export const UserNotFoundError = defineDomainError({
+  message: 'User not found',
+  code: 'USER.NOT_FOUND',
+  status: HttpStatus.NOT_FOUND,
+});

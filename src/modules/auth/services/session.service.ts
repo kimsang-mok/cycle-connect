@@ -1,14 +1,10 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { SessionRepositoryPort } from '../database/ports/session.repository.port';
 import { SessionEntity } from '../domain/session.entity';
 import { AggregateId } from '@src/libs/ddd';
 import { CreateSessionProps } from '../domain/auth.types';
 import { SESSION_REPOSITORY } from '../auth.di-tokens';
+import { NotFoundException } from '@src/libs/exceptions';
 
 @Injectable()
 export class SessionService {

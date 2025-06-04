@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 import { BikeTypes } from '../../domain/bike.types';
@@ -46,5 +47,7 @@ export class CreateBikeRequestDto {
     example: 'uploads/user-123/photo1.jpg',
     description: 'Key of the image used as thumbnail',
   })
+  @IsOptional()
+  @IsString()
   thumbnailKey?: string;
 }

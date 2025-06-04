@@ -14,7 +14,7 @@ export const mailerConfig = {
   ignoreTLS: get('MAIL_IGNORE_TLS').required().asString() === 'true',
   secure: get('MAIL_SECURE').required().asString() === 'true',
   requireTLS: get('MAIL_REQUIRE_TLS').required().asString() === 'true',
-  verifyTemplatePath: get('VERIFY_TEMPLATE_PATH').required().asString(),
+  verifyTemplatePath: get('VERIFY_TEMPLATE_PATH').asString(),
   forgotPasswordTemplatePath: get('FORGOT_PASSWORD_TEMPLATE_PATH').asString(),
   twoFactorTemplatePath: get('TWO_FACTOR_TEMPLATE_PATH').asString(),
 };

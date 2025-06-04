@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateBookingCommand } from './create-booking.command';
-import { Inject, NotFoundException } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { BOOKING_REPOSITORY } from '../../booking.di-tokens';
 import { BookingRepositoryPort } from '../../database/ports/booking.repository.port';
 import { BookingAvailabityService } from '../../domain/services/booking-availability.service';
@@ -10,6 +10,11 @@ import { BikeRepositoryPort } from '@src/modules/bike/database/ports/bike.reposi
 import { AggregateId } from '@src/libs/ddd';
 import { BookingEntity } from '../../domain/booking.entity';
 import { BIKE_REPOSITORY } from '@src/modules/bike/bike.di-tokens';
+import { NotFoundException } from '@src/libs/exceptions';
+import {
+  BikeInactiveError,
+  BikeNotAvailableError,
+} from '@src/modules/bike/bike.errors';
 
 @CommandHandler(CreateBookingCommand)
 export class CreateBookingService
@@ -36,7 +41,7 @@ export class CreateBookingService
     );
 
     if (!isBikeAvailable) {
-      throw new Error('Bike is not available at this moment');
+      throw new BikeNotAvailableError();
     }
 
     const bike = await this.bikeRepo.findOneById(command.bikeId);
@@ -46,7 +51,7 @@ export class CreateBookingService
     }
 
     if (!bike.getProps().isActive) {
-      throw new Error('Bike is unavailable right now');
+      throw new BikeInactiveError();
     }
 
     const totalPrice = this.pricingService.calculateTotalPrice(

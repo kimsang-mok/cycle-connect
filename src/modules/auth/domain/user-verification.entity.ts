@@ -9,6 +9,11 @@ import {
 import * as ms from 'ms';
 import { authConfig } from '@src/configs/auth.config';
 import { UserVerifiedDomainEvent } from './events/user-verified.domain-event';
+import {
+  UserAlreadyVerifiedError,
+  UserVerificationCodeExpiredError,
+  UserVerificationMismatchError,
+} from '../auth.errors';
 
 export class UserVerificationEntity extends AggregateRoot<UserVerificationProps> {
   protected readonly _id: AggregateId;
@@ -47,9 +52,10 @@ export class UserVerificationEntity extends AggregateRoot<UserVerificationProps>
   }
 
   verify(userId: string): void {
-    if (this.props.verified) throw new Error('Already verified');
-    if (this.props.userId !== userId) throw new Error('User mismatched');
-    if (new Date() > this.props.expiresAt) throw new Error('Code expired');
+    if (this.props.verified) throw new UserAlreadyVerifiedError();
+    if (this.props.userId !== userId) throw new UserVerificationMismatchError();
+    if (new Date() > this.props.expiresAt)
+      throw new UserVerificationCodeExpiredError();
 
     this.addEvent(
       new UserVerifiedDomainEvent({

@@ -1,8 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { BikeRepositoryPort } from '../database/ports/bike.repository.port';
 import { OnEvent } from '@nestjs/event-emitter';
 import { BookingCreatedDomainEvent } from '@src/modules/booking/domain/events/booking-created.domain-event';
 import { BIKE_REPOSITORY } from '../bike.di-tokens';
+import { NotFoundException } from '@src/libs/exceptions';
 
 @Injectable()
 export class MakeBikeUnavailableWhenBookingIsCreated {

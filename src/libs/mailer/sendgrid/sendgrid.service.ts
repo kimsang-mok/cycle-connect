@@ -7,6 +7,7 @@ import { HttpService } from '@nestjs/axios';
 
 import { lastValueFrom } from 'rxjs';
 import { mailerConfig } from '@src/configs/mailer.config';
+import { ArgumentNotProvidedException } from '@src/libs/exceptions';
 
 @Injectable()
 export class SendgridService extends TransporterService {
@@ -28,7 +29,9 @@ export class SendgridService extends TransporterService {
     }
 
     if (!mailerConfig.defaultEmail || !mailerConfig.defaultName) {
-      throw new Error('Please set default email and name');
+      throw new ArgumentNotProvidedException(
+        'Please set default email and name',
+      );
     }
 
     const builder = new EmailBuilder()
